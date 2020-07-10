@@ -1,5 +1,11 @@
+param(
+    [switch]
+    $Pause
+)
+
 $outdir = "$PSScriptRoot\out"
 $attempt = 0
+
 while ($true) {
 
     $attempt++
@@ -11,24 +17,13 @@ while ($true) {
 
     dotnet publish `
         .\OutpathDemo.sln `
-        --configuration Release `
         --output "$outdir\pub" `
         "/p:BaseIntermediateOutputPath=$outdir\obj\" `
         "/p:BaseOutputPath=$outdir\bin\" `
-        -maxCpuCount:1 `
-        -nodeReuse:false `
-        --nologo
 
-    if (Test-Path "$outdir\pub\OutpathDemo.exe") {
-        $output = & "$outdir\pub\OutpathDemo.exe" 2>&1
-        if ($output) {
-            Write-Host -ForegroundColor Red $output
-        }
-        else {
-            Write-Host -ForegroundColor Green "passed"
-        }
-    }
-    else {
-        Write-Host -ForegroundColor Red "exe not created"
+    &"$outdir\pub\OutpathDemo.exe"
+
+    if ($Pause) {
+        $null = Read-Host "Press enter to continue"
     }
 }
